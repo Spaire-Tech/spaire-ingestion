@@ -153,6 +153,7 @@ export async function POST(req: Request) {
   "name": "openai-usage",
   "metadata": {
     "inputTokens": 100,
+    "cachedInputTokens": 10,
     "outputTokens": 200,
     "totalTokens": 300,
     "model": "gpt-4o",

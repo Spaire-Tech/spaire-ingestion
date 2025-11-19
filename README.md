@@ -161,7 +161,7 @@ export async function POST(req: Request) {
     "strategy": "LLM",
     "_cost": {
       "amount": 123, // Amount is expected to be in cents. $1.23 should be represented as 123
-      "currency": "USD"
+      "currency": "usd"
     },
     "_llm": {
       ... //

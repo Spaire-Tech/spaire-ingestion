@@ -30,8 +30,8 @@ const mockLLMClient = {
       inputTokens: 1,
       outputTokens: 1,
       totalTokens: 2,
-      provider: "test-provider",
       model: "test-model",
+      vendor: "test-provider",
     },
   }),
   doStream: vi.fn(),
@@ -64,16 +64,74 @@ describe("LLMStrategy", () => {
 
     expect(spy).toHaveBeenCalledWith(
       {
-        promptTokens: 1,
-        completionTokens: 1,
+        inputTokens: 1,
+        outputTokens: 1,
         totalTokens: 2,
-        provider: "test-provider",
+        cachedInputTokens: 0,
+        vendor: "test-provider",
         model: "test-model",
         strategy: "LLM",
+        _llm: {
+          vendor: "test-provider",
+          model: "test-model",
+          inputTokens: 1,
+          outputTokens: 1,
+          cachedInputTokens: 0,
+          totalTokens: 2,
+        },
       },
       {
         customerId,
       }
     );
+  });
+
+  it("should call the cost handler with the correct context", async () => {
+    const input = { prompt: "Hello, world!" };
+
+    const llm = Ingestion()
+      .strategy(new LLMStrategy(mockLLMClient))
+      .cost((ctx) => ({ amount: ctx.totalTokens * 100, currency: "USD" }))
+      .ingest("prompt-tokens");
+
+    await llm
+      .client({
+        customerId,
+      })
+      .doGenerate({
+        prompt: [
+          { role: "user", content: [{ type: "text", text: input.prompt }] },
+        ],
+      });
+
+    expect(mockEventsIngest).toHaveBeenCalledWith({
+      events: [
+        {
+          name: "prompt-tokens",
+          customerId,
+          metadata: {
+            inputTokens: 1,
+            outputTokens: 1,
+            cachedInputTokens: 0,
+            totalTokens: 2,
+            model: "test-model",
+            vendor: "test-provider",
+            strategy: "LLM",
+            _llm: {
+              vendor: "test-provider",
+              model: "test-model",
+              inputTokens: 1,
+              outputTokens: 1,
+              cachedInputTokens: 0,
+              totalTokens: 2,
+            },
+            _cost: {
+              amount: 200,
+              currency: "USD",
+            },
+          },
+        },
+      ],
+    });
   });
 });

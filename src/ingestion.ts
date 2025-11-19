@@ -6,11 +6,13 @@ import type {
   IngestionStrategyCustomer,
   IngestionStrategyExternalCustomer,
 } from "./strategy";
+import type { EventMetadataInput } from "@polar-sh/sdk/models/components/eventmetadatainput.js";
+import type { CostMetadataInput } from "@polar-sh/sdk/models/components/costmetadatainput.js";
 
 export type IngestionContext<
-  TContext extends Record<string, string | number | boolean> = Record<
+  TContext extends Record<string, EventMetadataInput> = Record<
     string,
-    string | number | boolean
+    EventMetadataInput
   >
 > = TContext;
 
@@ -22,6 +24,7 @@ type Transformer<TContext extends IngestionContext> = (
 export class PolarIngestion<TContext extends IngestionContext> {
   public polarClient?: Polar;
   private transformers: Transformer<TContext>[] = [];
+  public costResolver?: (ctx: TContext) => CostMetadataInput;
 
   private pipe(transformer: Transformer<TContext>) {
     this.transformers.push(transformer);
@@ -40,9 +43,7 @@ export class PolarIngestion<TContext extends IngestionContext> {
 
   public schedule(
     meter: string,
-    metadataResolver?: (
-      ctx: TContext
-    ) => Record<string, number | string | boolean>
+    metadataResolver?: (ctx: TContext) => Record<string, EventMetadataInput>
   ) {
     return this.pipe(async (ctx, customer) => {
       if (!this.polarClient) {
@@ -54,7 +55,10 @@ export class PolarIngestion<TContext extends IngestionContext> {
           {
             ...customer,
             name: meter,
-            metadata: metadataResolver ? metadataResolver(ctx) : ctx,
+            metadata: {
+              ...(metadataResolver ? metadataResolver(ctx) : ctx),
+              ...(this.costResolver ? { _cost: this.costResolver(ctx) } : {}),
+            },
           },
         ],
       });

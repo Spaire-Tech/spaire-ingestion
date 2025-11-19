@@ -1,3 +1,4 @@
+import type { CostMetadataInput } from "@polar-sh/sdk/models/components/costmetadatainput.js";
 import { type IngestionContext, PolarIngestion } from "./ingestion";
 
 export type IngestionStrategyCustomer = {
@@ -39,6 +40,13 @@ export abstract class IngestionStrategy<
   ) {
     this.schedule(eventName, metadataResolver);
 
+    return this;
+  }
+
+  public cost(
+    costResolver: (ctx: TUsageContext) => CostMetadataInput
+  ): IngestionStrategy<TUsageContext, TStrategyClient> {
+    this.costResolver = costResolver;
     return this;
   }
 

@@ -62,6 +62,39 @@ await polar.events.ingest({
 });
 ```
 
+### Associating Costs with Events
+
+With the Polar Event Ingestion API, you can annotate arbitrary costs with events. This unlock the possibility to see Customer Costs, Margins & Cashflow in your Polar Dashboard.
+
+This is especially powerful with LLM calls, as token consumption typically comes with a cost for your business.
+
+[Learn more about cost ingestion](https://polar.sh/docs/features/cost-insights/cost-events)
+
+```typescript
+import { Polar } from "@polar-sh/sdk";
+
+const polar = new Polar({
+  accessToken: process.env["POLAR_ACCESS_TOKEN"] ?? "",
+});
+
+await polar.events.ingest({
+  events: [
+    // Ingest using Polar Customer ID
+    {
+      name: "<value>",
+      customerId: "<value>",
+      metadata: {
+        myProp: "<value>",
+        _cost: {
+          amount: 100, // Amount is expected to be in cents. $1.23 should be represented as 123
+          currency: "USD",
+        },
+      },
+    },
+  ],
+});
+```
+
 ## Strategies
 
 Want to report events regarding Large Language Model usage, S3 file uploads or something else? Our Ingestion strategies are customized to make it as seamless as possible to fire ingestion events for complex needs.
@@ -80,9 +113,17 @@ import { LLMStrategy } from "@polar-sh/ingestion/strategies/LLM";
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 
-// Setup the LLM Ingestion Strategy
+/**
+ * Setup the LLM Ingestion Strategy
+ *
+ * 1. We initilize the Ingestion object with a Polar Access Token
+ * 2. We attach the LLM Strategy to the ingestion instance
+ * 3. (Optional) - We can calculate a cost for the LLM call, and associate it with the event
+ * 4. We finally declare what name the ingested event should have
+ */
 const llmIngestion = Ingestion({ accessToken: process.env.POLAR_ACCESS_TOKEN })
   .strategy(new LLMStrategy(openai("gpt-4o")))
+  .cost((ctx) => ({ amount: ctx.totalTokens * 100, currency: "USD" }))
   .ingest("openai-usage");
 
 export async function POST(req: Request) {
@@ -111,12 +152,19 @@ export async function POST(req: Request) {
   "customerId": "123",
   "name": "openai-usage",
   "metadata": {
-    "promptTokens": 100,
-    "completionTokens": 200,
+    "inputTokens": 100,
+    "outputTokens": 200,
     "totalTokens": 300,
     "model": "gpt-4o",
     "provider": "openai.responses",
-    "strategy": "LLM"
+    "strategy": "LLM",
+    "_cost": {
+      "amount": 123, // Amount is expected to be in cents. $1.23 should be represented as 123
+      "currency": "USD"
+    },
+    "_llm": {
+      ... //
+    }
   }
 }
 ```

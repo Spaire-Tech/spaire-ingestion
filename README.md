@@ -87,7 +87,7 @@ await polar.events.ingest({
         myProp: "<value>",
         _cost: {
           amount: 100, // Amount is expected to be in cents. $1.23 should be represented as 123
-          currency: "USD",
+          currency: "usd",
         },
       },
     },

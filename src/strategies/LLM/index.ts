@@ -14,7 +14,7 @@ import {
 import type { CostMetadataInput } from "@polar-sh/sdk/models/components/costmetadatainput.js";
 import type { LLMMetadata } from "@polar-sh/sdk/models/components/llmmetadata.js";
 
-type LLMStrategyContext = IngestionContext<{
+export type LLMStrategyContext = IngestionContext<{
   inputTokens: number;
   outputTokens: number;
   totalTokens: number;

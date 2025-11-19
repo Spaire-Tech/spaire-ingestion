@@ -5,7 +5,7 @@ import {
   type IngestionStrategyExternalCustomer,
 } from "../../strategy";
 
-type DeltaTimeStrategyContext = IngestionStrategyContext & {
+export type DeltaTimeStrategyContext = IngestionStrategyContext & {
   deltaTime: number;
   strategy: "DeltaTime";
 };

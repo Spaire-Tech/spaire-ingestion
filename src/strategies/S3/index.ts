@@ -7,7 +7,7 @@ import {
   type IngestionStrategyExternalCustomer,
 } from "../../strategy";
 
-type S3StrategyContext = IngestionStrategyContext & {
+export type S3StrategyContext = IngestionStrategyContext & {
   bucket?: string;
   key?: string;
   contentType?: string;

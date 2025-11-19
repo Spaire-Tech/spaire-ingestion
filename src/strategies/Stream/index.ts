@@ -7,7 +7,7 @@ import {
   type IngestionStrategyExternalCustomer,
 } from "../../strategy";
 
-type StreamStrategyContext = IngestionStrategyContext & {
+export type StreamStrategyContext = IngestionStrategyContext & {
   bytes: number;
   strategy: "Stream";
 };

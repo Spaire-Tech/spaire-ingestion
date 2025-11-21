@@ -21,10 +21,17 @@ type Transformer<TContext extends IngestionContext> = (
   customer: IngestionStrategyCustomer | IngestionStrategyExternalCustomer
 ) => Promise<void>;
 
+export type Span = {
+  name: string;
+  startTime: number;
+  endTime: number;
+};
+
 export class PolarIngestion<TContext extends IngestionContext> {
   public polarClient?: Polar;
   private transformers: Transformer<TContext>[] = [];
   public costResolver?: (ctx: TContext) => CostMetadataInput;
+  public span?: Span;
 
   private pipe(transformer: Transformer<TContext>) {
     this.transformers.push(transformer);

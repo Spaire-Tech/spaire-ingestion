@@ -59,6 +59,16 @@
         "types": "./dist/strategies/DeltaTime/index.d.cts",
         "require": "./dist/strategies/DeltaTime/index.cjs"
       }
+    },
+    "./opentelemetry": {
+      "import": {
+        "types": "./dist/opentelemetry/index.d.ts",
+        "import": "./dist/opentelemetry/index.js"
+      },
+      "require": {
+        "types": "./dist/opentelemetry/index.d.cts",
+        "require": "./dist/opentelemetry/index.cjs"
+      }
     }
   },
   "scripts": {
@@ -74,6 +84,8 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@opentelemetry/core": "^2.2.0",
+    "@opentelemetry/sdk-trace-base": "^2.2.0",
     "@polar-sh/sdk": "^0.41.5"
   },
   "peerDependencies": {
@@ -84,6 +96,8 @@
     "@ai-sdk/provider": "^2.0.0",
     "@aws-sdk/client-s3": "^3.800.0",
     "@biomejs/biome": "1.9.4",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/sdk-trace-node": "^2.2.0",
     "@sindresorhus/tsconfig": "^7.0.0",
     "@types/node": "^22.15.3",
     "ai": "^5.0.18",

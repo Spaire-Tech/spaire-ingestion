@@ -1,13 +1,13 @@
-import { Polar, type SDKOptions } from "@polar-sh/sdk";
-import type { EventCreateCustomer } from "@polar-sh/sdk/models/components/eventcreatecustomer.js";
+import { Polar as Spaire, type SDKOptions } from "@spaire/sdk";
+import type { EventCreateCustomer } from "@spaire/sdk/models/components/eventcreatecustomer.js";
 import type {
   IngestionStrategy,
   IngestionStrategyContext,
   IngestionStrategyCustomer,
   IngestionStrategyExternalCustomer,
 } from "./strategy";
-import type { EventMetadataInput } from "@polar-sh/sdk/models/components/eventmetadatainput.js";
-import type { CostMetadataInput } from "@polar-sh/sdk/models/components/costmetadatainput.js";
+import type { EventMetadataInput } from "@spaire/sdk/models/components/eventmetadatainput.js";
+import type { CostMetadataInput } from "@spaire/sdk/models/components/costmetadatainput.js";
 
 export type IngestionContext<
   TContext extends Record<string, EventMetadataInput> = Record<
@@ -27,8 +27,8 @@ export type Span = {
   endTime: number;
 };
 
-export class PolarIngestion<TContext extends IngestionContext> {
-  public polarClient?: Polar;
+export class SpaireIngestion<TContext extends IngestionContext> {
+  public spaireClient?: Spaire;
   private transformers: Transformer<TContext>[] = [];
   public costResolver?: (ctx: TContext) => CostMetadataInput;
   public span?: Span;
@@ -53,11 +53,11 @@ export class PolarIngestion<TContext extends IngestionContext> {
     metadataResolver?: (ctx: TContext) => Record<string, EventMetadataInput>
   ) {
     return this.pipe(async (ctx, customer) => {
-      if (!this.polarClient) {
-        throw new Error("Polar client not initialized");
+      if (!this.spaireClient) {
+        throw new Error("Spaire client not initialized");
       }
 
-      await this.polarClient.events.ingest({
+      await this.spaireClient.events.ingest({
         events: [
           {
             ...customer,
@@ -73,18 +73,18 @@ export class PolarIngestion<TContext extends IngestionContext> {
   }
 }
 
-export function Ingestion(polarConfig?: SDKOptions) {
+export function Ingestion(spaireConfig?: SDKOptions) {
   return {
     strategy: <TContext extends IngestionStrategyContext, TStrategyClient>(
       strategy: IngestionStrategy<TContext, TStrategyClient>
     ) => {
-      strategy.polarClient = new Polar(polarConfig);
+      strategy.spaireClient = new Spaire(spaireConfig);
       return strategy;
     },
     ingest: async (events: (EventCreateCustomer | EventCreateCustomer)[]) => {
-      const polar = new Polar(polarConfig);
+      const spaire = new Spaire(spaireConfig);
 
-      return polar.events.ingest({
+      return spaire.events.ingest({
         events,
       });
     },

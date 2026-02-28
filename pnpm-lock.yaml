@@ -15,8 +15,8 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(@opentelemetry/api@1.9.0)
       '@spaire/sdk':
-        specifier: npm:@polar-sh/sdk@^0.41.5
-        version: '@polar-sh/sdk@0.41.5'
+        specifier: ^0.45.1
+        version: 0.45.1
     devDependencies:
       '@ai-sdk/provider':
         specifier: ^2.0.0
@@ -489,9 +489,6 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
-  '@polar-sh/sdk@0.41.5':
-    resolution: {integrity: sha512-E+VoVV+WvebZKmj+KZ/fj1byBZbG7J8hHyzYD9kktvAToigPM19sywo2tFCHeb44aWGCVACMOP8r31e6je7dxA==}
-
   '@rollup/rollup-android-arm-eabi@4.46.4':
     resolution: {integrity: sha512-B2wfzCJ+ps/OBzRjeds7DlJumCU3rXMxJJS1vzURyj7+KBHGONm7c9q1TfdBl4vCuNMkDvARn3PBl2wZzuR5mw==}
     cpu: [arm]
@@ -807,6 +804,9 @@ packages:
   '@smithy/util-waiter@4.0.7':
     resolution: {integrity: sha512-mYqtQXPmrwvUljaHyGxYUIIRI3qjBTEb/f5QFi3A6VlxhpmZd5mWXn9W+qUkf2pVE1Hv3SqxefiZOPGdxmO64A==}
     engines: {node: '>=18.0.0'}
+
+  '@spaire/sdk@0.45.1':
+    resolution: {integrity: sha512-Xf4Wa5/sZS+W/hgoQGbk9bSjO8QbFR87used6f3kcjQlmTQ5XxDbIN7M8Uj6rO+QAynhoT1RdfWhyVpso4JcUg==}
 
   '@stablelib/base64@1.0.1':
     resolution: {integrity: sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ==}
@@ -2056,11 +2056,6 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@polar-sh/sdk@0.41.5':
-    dependencies:
-      standardwebhooks: 1.0.0
-      zod: 3.25.76
-
   '@rollup/rollup-android-arm-eabi@4.46.4':
     optional: true
 
@@ -2458,6 +2453,11 @@ snapshots:
       '@smithy/abort-controller': 4.0.5
       '@smithy/types': 4.3.2
       tslib: 2.8.1
+
+  '@spaire/sdk@0.45.1':
+    dependencies:
+      standardwebhooks: 1.0.0
+      zod: 3.25.76
 
   '@stablelib/base64@1.0.1': {}
 

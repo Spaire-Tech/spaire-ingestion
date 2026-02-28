@@ -5,133 +5,133 @@ const mockEventsIngest = vi.fn();
 
 // Mock the module before any imports
 vi.mock("@spaire/sdk", async (importOriginal) => {
-  class Polar {
-    events = {
-      ingest: mockEventsIngest,
-    };
-  }
+	class Polar {
+		events = {
+			ingest: mockEventsIngest,
+		};
+	}
 
-  return {
-    ...(await importOriginal()),
-    Polar,
-  };
+	return {
+		...(await importOriginal()),
+		Polar,
+	};
 });
 
 import { Ingestion } from "../../ingestion";
 
 const mockLLMClient = {
-  specificationVersion: "v2",
-  provider: "test-provider",
-  modelId: "test-model",
-  defaultObjectGenerationMode: "json",
-  supportedUrls: {},
-  doGenerate: vi.fn().mockResolvedValue({
-    usage: {
-      inputTokens: 1,
-      outputTokens: 1,
-      totalTokens: 2,
-      model: "test-model",
-      vendor: "test-provider",
-    },
-  }),
-  doStream: vi.fn(),
+	specificationVersion: "v2",
+	provider: "test-provider",
+	modelId: "test-model",
+	defaultObjectGenerationMode: "json",
+	supportedUrls: {},
+	doGenerate: vi.fn().mockResolvedValue({
+		usage: {
+			inputTokens: 1,
+			outputTokens: 1,
+			totalTokens: 2,
+			model: "test-model",
+			vendor: "test-provider",
+		},
+	}),
+	doStream: vi.fn(),
 } as const;
 
 describe("LLMStrategy", () => {
-  const customerId = "test-customer-id";
+	const customerId = "test-customer-id";
 
-  it("should call the meter handler with the correct context", async () => {
-    const input = { prompt: "Hello, world!" };
+	it("should call the meter handler with the correct context", async () => {
+		const input = { prompt: "Hello, world!" };
 
-    const llm = Ingestion()
-      .strategy(new LLMStrategy(mockLLMClient))
-      .ingest("prompt-tokens");
+		const llm = Ingestion()
+			.strategy(new LLMStrategy(mockLLMClient))
+			.ingest("prompt-tokens");
 
-    const spy = vi.spyOn(llm, "execute");
+		const spy = vi.spyOn(llm, "execute");
 
-    await llm
-      .client({
-        customerId,
-      })
-      .doGenerate({
-        prompt: [
-          {
-            role: "user",
-            content: [{ type: "text", text: input.prompt }],
-          },
-        ],
-      });
+		await llm
+			.client({
+				customerId,
+			})
+			.doGenerate({
+				prompt: [
+					{
+						role: "user",
+						content: [{ type: "text", text: input.prompt }],
+					},
+				],
+			});
 
-    expect(spy).toHaveBeenCalledWith(
-      {
-        inputTokens: 1,
-        outputTokens: 1,
-        totalTokens: 2,
-        cachedInputTokens: 0,
-        vendor: "test-provider",
-        model: "test-model",
-        strategy: "LLM",
-        _llm: {
-          vendor: "test-provider",
-          model: "test-model",
-          inputTokens: 1,
-          outputTokens: 1,
-          cachedInputTokens: 0,
-          totalTokens: 2,
-        },
-      },
-      {
-        customerId,
-      }
-    );
-  });
+		expect(spy).toHaveBeenCalledWith(
+			{
+				inputTokens: 1,
+				outputTokens: 1,
+				totalTokens: 2,
+				cachedInputTokens: 0,
+				vendor: "test-provider",
+				model: "test-model",
+				strategy: "LLM",
+				_llm: {
+					vendor: "test-provider",
+					model: "test-model",
+					inputTokens: 1,
+					outputTokens: 1,
+					cachedInputTokens: 0,
+					totalTokens: 2,
+				},
+			},
+			{
+				customerId,
+			},
+		);
+	});
 
-  it("should call the cost handler with the correct context", async () => {
-    const input = { prompt: "Hello, world!" };
+	it("should call the cost handler with the correct context", async () => {
+		const input = { prompt: "Hello, world!" };
 
-    const llm = Ingestion()
-      .strategy(new LLMStrategy(mockLLMClient))
-      .cost((ctx) => ({ amount: ctx.totalTokens * 100, currency: "USD" }))
-      .ingest("prompt-tokens");
+		const llm = Ingestion()
+			.strategy(new LLMStrategy(mockLLMClient))
+			.cost((ctx) => ({ amount: ctx.totalTokens * 100, currency: "USD" }))
+			.ingest("prompt-tokens");
 
-    await llm
-      .client({
-        customerId,
-      })
-      .doGenerate({
-        prompt: [
-          { role: "user", content: [{ type: "text", text: input.prompt }] },
-        ],
-      });
+		await llm
+			.client({
+				customerId,
+			})
+			.doGenerate({
+				prompt: [
+					{ role: "user", content: [{ type: "text", text: input.prompt }] },
+				],
+			});
 
-    expect(mockEventsIngest).toHaveBeenCalledWith({
-      events: [
-        {
-          name: "prompt-tokens",
-          customerId,
-          metadata: {
-            inputTokens: 1,
-            outputTokens: 1,
-            cachedInputTokens: 0,
-            totalTokens: 2,
-            model: "test-model",
-            vendor: "test-provider",
-            strategy: "LLM",
-            _llm: {
-              vendor: "test-provider",
-              model: "test-model",
-              inputTokens: 1,
-              outputTokens: 1,
-              cachedInputTokens: 0,
-              totalTokens: 2,
-            },
-            _cost: {
-              amount: 200,
-              currency: "USD",
-            },
-          },
-        },
-      ],
-    });
-  });
+		expect(mockEventsIngest).toHaveBeenCalledWith({
+			events: [
+				{
+					name: "prompt-tokens",
+					customerId,
+					metadata: {
+						inputTokens: 1,
+						outputTokens: 1,
+						cachedInputTokens: 0,
+						totalTokens: 2,
+						model: "test-model",
+						vendor: "test-provider",
+						strategy: "LLM",
+						_llm: {
+							vendor: "test-provider",
+							model: "test-model",
+							inputTokens: 1,
+							outputTokens: 1,
+							cachedInputTokens: 0,
+							totalTokens: 2,
+						},
+						_cost: {
+							amount: 200,
+							currency: "USD",
+						},
+					},
+				},
+			],
+		});
+	});
 });

@@ -44,6 +44,7 @@ export class S3Strategy extends IngestionStrategy<S3StrategyContext, S3Client> {
 								bytes: Number.parseInt(
 									// @ts-expect-error
 									args.request.headers["content-length"] ?? "0",
+									10,
 								),
 								strategy: "S3",
 							};

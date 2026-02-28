@@ -68,7 +68,7 @@ With the Spaire Event Ingestion API, you can annotate arbitrary costs with event
 
 This is especially powerful with LLM calls, as token consumption typically comes with a cost for your business.
 
-[Learn more about cost ingestion](https://spaire.sh/docs/features/cost-insights/cost-events)
+[Learn more about cost ingestion](https://spairehq.com/docs/features/cost-insights/cost-events)
 
 ```typescript
 import { Spaire } from "@spaire/sdk";
